@@ -1,0 +1,61 @@
+# @package _global_
+defaults:
+  - /pipeline: pathfinder
+  - /model: mamba
+  - override /optimizer: adamw
+  - override /scheduler: constant_warmup
+
+scheduler:
+  # num_training_steps: 40000
+  num_warmup_steps: 5000 # 1 epoch
+
+model:
+  dropout: 0.
+  n_layers: 4
+  prenorm: true
+  d_model: 64
+  norm: rms # batch
+
+  encoder:
+    _name_: position
+    dropout: 0
+
+  layer:
+    - _name_: mamba
+      causal: false
+      dropout: 0.
+      ss_state: 64
+      d_conv: 4
+      expand: 2
+      bias: True
+      add_bias_kv: False  # not implementd yet
+      add_zero_attn: False # not implementd yet
+      kdim: null  # not implementd yet
+      vdim: null  # not implementd yet
+      rotary: false
+    - _name_: ff
+      expand: 1
+      activation: gelu
+      dropout: ${...dropout} # Same as null
+
+decoder:
+  _name_: sequence_nonelinear
+  mode: pool
+
+loader:
+  batch_size: 32
+
+optimizer:
+  lr: 0.0001
+  weight_decay: 0.05
+  betas:
+    - 0.9
+    - 0.95 
+
+trainer:
+  max_epochs: 200
+  # gradient_clip_val: 1.0
+
+train:
+  seed: 2222
+  interval: step

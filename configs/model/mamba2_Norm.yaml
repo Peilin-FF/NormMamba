@@ -1,0 +1,8 @@
+# Large Transformer model used as baseline for WikiText-103
+defaults:
+  - base
+  - override layer: mamba2_Norm
+
+encoder:
+  _name_: id
+  dropout: ${..dropout}

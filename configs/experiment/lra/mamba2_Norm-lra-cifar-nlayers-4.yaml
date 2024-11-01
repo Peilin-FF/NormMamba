@@ -1,0 +1,62 @@
+# @package _global_
+defaults:
+  - /pipeline: cifar
+  - /model: mamba2_Norm
+  - override /optimizer: adamw
+  - override /scheduler: cosine_warmup
+
+scheduler:
+#  num_training_steps: 250000 # 50 epochs
+  num_warmup_steps: 2000 # 1 epoch
+
+model:
+  dropout: 0.0
+  n_layers: 4
+  prenorm: true
+  d_model: 128
+  norm: rms
+  layer:
+    - _name_: mamba2_Norm
+      causal: false
+      ss_state: 16
+      d_conv: 4
+      expand: 2
+      dropout: null
+      bias: True
+      add_bias_kv: False  # not implementd yet
+      add_zero_attn: False # not implementd yet
+      kdim: null  # not implementd yet
+      vdim: null  # not implementd yet
+      rotary: false
+
+decoder:
+  _name_: sequence_nonelinear
+  mode: pool
+
+dataset:
+  grayscale: true
+
+loader:
+  batch_size: 128
+
+optimizer:
+  lr: 0.001
+  weight_decay: 0.1
+  betas:
+    - 0.9
+    - 0.95 
+
+trainer:
+  accelerator: gpu
+  devices: 12
+  max_epochs: 200
+  gradient_clip_val: 0.0
+  log_every_n_steps: 10
+  limit_train_batches: 1.0
+  limit_val_batches: 1.0
+  accumulate_grad_batches: 1
+  strategy: ddp # 或者设置为 `ddp` 如果使用多GPU
+
+
+train:
+  seed: 2222
