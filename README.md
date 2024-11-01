@@ -30,4 +30,7 @@ pytorch-lightning==2.2.0
 rotary-embedding-torch==0.8.3
 conda install -c conda-forge cudatoolkit=11.7
 
+start:
+CUDA_VISIBLE_DEVICES={7} python train.py experiment=lra/mamba-lra-listops
 
+project: state-spaces
